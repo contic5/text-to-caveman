@@ -1,0 +1,1 @@
+This page turns all words to one sound words to make man of cave talk. This page goes to the Muse of Bits page (DataMuse API) to get the most used one sound word that means the same thing as the more than one sound word. If this page cannot find words with one sound, it gets the word with the least sounds it can find.
