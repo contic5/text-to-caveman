@@ -1,9 +1,10 @@
 import './style.css'
 import { syllable } from 'syllable';
 
-async function get_one_syllable_synonyms(word) 
+//Try to get the word with the smallest number of syllables. Ideally we can get a word with one syllable. If not, we try to get the smallest word possible.
+async function get_smallest_snyonym(word) 
 {
-  //https://api.datamuse.com/words/?rel_syn=ocean&md=s
+  //https://api.datamuse.com/words/?rel_syn=ocean&md=s,f
   const baseUrl = "https://api.datamuse.com/words";
   try 
   {
@@ -18,20 +19,23 @@ async function get_one_syllable_synonyms(word)
       let frequency=data[i]["tags"][0];
       data[i]["frequency"]=parseFloat(frequency.substring(2,frequency.length));
     }
-    //Sort data elements by frequency descending
-    data=data.sort((a,b)=>b["frequency"]-a["frequency"]);
+    //Sort data elements by number of syllables and by frequency descending
+    data=data.sort((a,b)=>{
+      if(a["numSyllables"]<b["numSyllables"])
+      {
+        return -1;
+      }
+      else if(a["numSyllables"]>b["numSyllables"])
+      {
+        return 1;
+      }
+      return b["frequency"]-a["frequency"]
+    });
     
     console.log(`${word} ${complete_link}`);
 
-    //Get the first word that has 1 syllable.
-    for(let i=0;i<data.length;i++)
-    {
-      if(data[i]["numSyllables"]==1)
-      {
-        return data[i]["word"];
-      }
-    }
-    return "";
+    //return the word with the least number of syllables that is most popular among words with that many syllables.
+    return data[0]["word"];
   } 
   catch (error) 
   {
@@ -39,15 +43,28 @@ async function get_one_syllable_synonyms(word)
     return "";
   }
 }
-export async function text_to_caveman()
+function display_results(res_words)
 {
-  let original_element=document.getElementById("original");
-  let original=original_element.value;
-  original=original.trim();
-  console.log(original);
-  let words=original.split(" ");
-  let res_words=[];
+  let res_element=document.getElementById("results");
+  res_element.innerHTML="";
+  for(let word of res_words)
+  {
+    let span=document.createElement("span");
+    res_element.appendChild(span);
+    span.innerHTML=word+" ";
+    if(syllable(word)==1)
+    {
 
+    }
+    else
+    {
+      span.style.color="red";
+    }
+  }
+}
+async function calculate_result_words(words)
+{
+  let res_words=[];
   for(let word of words)
   {
     //Skip searching for synonyms if the word only has one sound.
@@ -57,12 +74,12 @@ export async function text_to_caveman()
       continue;
     }
 
-    let synonym_word=await get_one_syllable_synonyms(word);
+    let synonym_word=await get_smallest_snyonym(word);
     //Try again if the word has an s at the end
     if(!synonym_word&&word.substring(word.length-1)=="s")
     {
       let shortened_word=word.slice(0,word.length-1);
-      synonym_word=await get_one_syllable_synonyms(shortened_word);
+      synonym_word=await get_smallest_snyonym(shortened_word);
       if(synonym_word)
       {
         synonym_word+="s";
@@ -79,7 +96,31 @@ export async function text_to_caveman()
       res_words.push(word);
     }
   }
-
-  let res_element=document.getElementById("results");
-  res_element.value=res_words.join(" ");
+  return res_words;
 }
+export async function text_to_caveman()
+{
+  let original_element=document.getElementById("original");
+  let original=original_element.value;
+  original=original.trim();
+  console.log(original);
+
+  let words=original.split(" ");
+  let res_words=[];
+
+  if(!fast_test)
+  {
+    res_words=await calculate_result_words(words);
+  }
+  else
+  {
+    res_words=[...words];
+  }
+
+  console.log(res_words);
+  display_results(res_words);
+}
+
+let fast_test=false;
+let start_text="This is a simple conversion test";
+document.getElementById("original").value=start_text;

@@ -15,3 +15,10 @@ textarea
   width:500px;
   display: block;
 }
+#results
+{
+  width: 500px;
+  background-color: white;
+  border: black solid 2px;
+  padding: 5px;
+}
