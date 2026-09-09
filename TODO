@@ -1,0 +1,10 @@
+Create a project that converts words to caveman (one syllable words only). Input can be any text, but output must be one syllable words.
+
+npm install synonyms
+
+npm install syllable
+
+For each input word
+1. Have the synonym library get synonyms for a word. 
+2. Have the syllable library check how many syllables each synonym has
+3. Return the first synonym that has one syllable

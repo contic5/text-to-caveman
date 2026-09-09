@@ -1,0 +1,12 @@
+main
+{
+  background-color: rgb(174, 203, 131);
+  min-height: 100vh;
+  margin: auto;
+  max-width: 800px;
+  padding: 10px;
+}
+body
+{
+  background-color: rgb(103, 92, 92);
+}
