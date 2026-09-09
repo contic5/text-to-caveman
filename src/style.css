@@ -10,3 +10,8 @@ body
 {
   background-color: rgb(103, 92, 92);
 }
+textarea
+{
+  width:500px;
+  display: block;
+}
