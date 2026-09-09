@@ -62,18 +62,17 @@ function display_results(res_words)
     }
   }
 }
-async function calculate_result_words(words)
+async function calculate_result_word(words,res_words=[],index=0)
 {
-  let res_words=[];
-  for(let word of words)
-  {
-    //Skip searching for synonyms if the word only has one sound.
-    if(syllable(word)==1)
-    {
-      res_words.push(word);
-      continue;
-    }
+  const word=words[index];
 
+  //Skip searching for synonyms if the word only has one sound.
+  if(syllable(word)==1)
+  {
+    res_words.push(word);
+  }
+  else
+  {
     let synonym_word=await get_smallest_snyonym(word);
     //Try again if the word has an s at the end
     if(!synonym_word&&word.substring(word.length-1)=="s")
@@ -96,7 +95,15 @@ async function calculate_result_words(words)
       res_words.push(word);
     }
   }
-  return res_words;
+
+  if(index<words.length-1)
+  {
+    setTimeout(()=>calculate_result_word(words,res_words,index+1),50);
+  }
+  else
+  {
+    display_results(res_words);
+  }
 }
 export async function text_to_caveman()
 {
@@ -110,15 +117,13 @@ export async function text_to_caveman()
 
   if(!fast_test)
   {
-    res_words=await calculate_result_words(words);
+    calculate_result_word(words,res_words,0);
   }
   else
   {
     res_words=[...words];
+    display_results(res_words);
   }
-
-  console.log(res_words);
-  display_results(res_words);
 }
 
 let fast_test=false;
