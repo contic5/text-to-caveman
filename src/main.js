@@ -16,10 +16,10 @@ async function get_one_syllable_synonyms(word)
     for(let i=0;i<data.length;i++)
     {
       let frequency=data[i]["tags"][0];
-      data[i]["frequency"]=parseFloat(f.substring(2,frequency.length));
+      data[i]["frequency"]=parseFloat(frequency.substring(2,frequency.length));
     }
     //Sort data elements by frequency descending
-    data=data.sort((a,b)=>b["f"]-a["f"]);
+    data=data.sort((a,b)=>b["frequency"]-a["frequency"]);
     
     console.log(`${word} ${complete_link}`);
 
